@@ -78,29 +78,42 @@ def main():
     is_continue = True
     
     while is_continue:
-        print('To-Do-List Menu:\n1. View Task\n2. Add a Task\n3. Remove Task\n4. Exit')
+        print('\n==========================================')
+        print('|             📋To-Do-List Menu:          |')
+        print('==========================================')
+        print('1. View Task\n2. Add a Task\n3. Remove Task\n4. Exit\n')
 
         try:
             user_input = int(input('Enter your choice: '))
         except ValueError:
-            print('Error Input: Please input a number')
+            print('⚠️Error Input⚠️: Please input a number')
             continue
             
         if user_input == 1:
             all_tasks = view_task('database.csv')
+            print('\n==========================================')
+            print('|                 📜Task:                |')
+            print('==========================================')
             for i, task in enumerate(all_tasks, start=1):
                 task_text = task['task']
                 print(f'{i}. {task_text}')
 
         elif user_input == 2:
+            print('\n==========================================')
+            print('|                🆕New Task:             |')
+            print('==========================================')
             task_name = input('Enter a new task: ')
 
             if add_task('database.csv', task_name):
-                print(f'{task_name} is successfully added')
+                print(f'{task_name} is successfully added🥳')
             else:
-                print('Operation failed, please check again')
+                print('⚠️WARNING⚠️: Operation failed, please check again')
 
         elif user_input == 3:
+            print('\n==========================================')
+            print('|              ❌Delete Task:            |')
+            print('==========================================')
+            print('\n📋Task List: ')
             all_tasks = view_task('database.csv')
             for i, task in enumerate(all_tasks, start=1):
                 task_text = task['task']
@@ -111,16 +124,19 @@ def main():
                     remove_input = int(input('Select the number to be deleted: '))
                     break
                 except ValueError:
-                    print('Value Error: Please enter a number')
+                    print('⚠️Value Error⚠️: Please enter a number')
                     continue
             
             remove_task('database.csv', remove_input)
             
         elif user_input == 4:
+            print('\n==========================================')
+            print('|              Thanks You😍              |')
+            print('==========================================')
             is_continue = False
 
         else:
-            print('Invalid Input: Please input 1, 2, 3, or 4')
+            print('⚠️Invalid Input⚠️: Please input 1, 2, 3, or 4')
 
 
 if __name__ == "__main__":
