@@ -1,6 +1,7 @@
 import csv
 import os
 
+FIELDSNAME = ['task', 'categories']
 
 def view_task(database):
     task = []
@@ -19,14 +20,37 @@ def view_task(database):
     return task
 
 
-def add_task(database: str, input_task):
+
+def view_categorized_task(database):
+    all_tasks = view_task(database)
+    categorized_result = {}
+
+    for row_dict in all_tasks:
+        # Ambil kategori dari data, default 'Uncategorized' jika kosong
+        category = row_dict.get('categories', 'Uncategorized').strip()
+        if not category:
+            category = 'Uncategorized' # Handle string kosong
+            
+        task_name = row_dict.get('task', 'Task Tanpa Nama')
+        
+        # Buat list jika kategori ini baru pertama kali ditemukan
+        if category not in categorized_result:
+            categorized_result[category] = []
+            
+        # Tambahkan nama task ke list kategori yang sesuai
+        categorized_result[category].append(task_name)
+        
+    return categorized_result
+
+
+
+def add_task(database: str, input_task: str, categories_task: str):
     file_exists = os.path.exists(database)
 
     try:
-        new_data = {'task' : input_task}
+        new_data = {'task' : input_task, 'categories' : categories_task}
 
         with open(database, mode='a', newline='') as file:
-            FIELDSNAME = ['task']
             writer = csv.DictWriter(file, fieldnames=FIELDSNAME)
 
             if not file_exists:
@@ -90,21 +114,27 @@ def main():
             continue
             
         if user_input == 1:
-            all_tasks = view_task('database.csv')
             print('\n==========================================')
-            print('|                 📜Task:                |')
+            print('|           📂Tasks by Category:         |')
             print('==========================================')
-            for i, task in enumerate(all_tasks, start=1):
-                task_text = task['task']
-                print(f'{i}. {task_text}')
-
+            
+            categorized_data = view_categorized_task('database.csv')
+            
+            if not categorized_data:
+                print('Tidak ada task untuk dikelompokkan.')
+            else:
+                for category, task_list in categorized_data.items():
+                    print(f'\n--- 🗂️  Kategori: {category} ---')
+                    for i, task_name in enumerate(task_list, start=1):
+                        print(f"  {i}. {task_name}")
         elif user_input == 2:
             print('\n==========================================')
             print('|                🆕New Task:             |')
             print('==========================================')
             task_name = input('Enter a new task: ')
+            categories_input = input('Enter the categories: ')
 
-            if add_task('database.csv', task_name):
+            if add_task('database.csv', task_name, categories_input):
                 print(f'{task_name} is successfully added🥳')
             else:
                 print('⚠️WARNING⚠️: Operation failed, please check again')
@@ -131,7 +161,7 @@ def main():
             
         elif user_input == 4:
             print('\n==========================================')
-            print('|              Thanks You😍              |')
+            print('|              Thank You😍              |')
             print('==========================================')
             is_continue = False
 
